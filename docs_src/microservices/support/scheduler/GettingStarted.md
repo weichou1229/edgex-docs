@@ -74,10 +74,14 @@ Examples of schedule action include:
 ### ScheduleDefinition
 A schedule definition specifies an interval (type **INTERVAL**) or a crontab expression (type **CRON**) for a scheduleJob to be triggered at a specific time.
 
-Two optional fields are available for the schedule definition:
+Three optional fields are available for the schedule definition:
 
 1. **startTimestamp**: The start Unix timestamp of the schedule job, in milliseconds.
 2. **endTimestamp**: The end Unix timestamp of the schedule job, in milliseconds.
+3. **activeYearlyTimeWindow**: A recurring yearly active period, given as a start and end month/day. The job only runs on dates within this period each year and is skipped outside it. When omitted, the job runs on every trigger within its lifetime. If the start (month/day) is later than the end, the window is year-crossing, e.g. Nov 15 to Feb 10 keeps the job active every winter. This field works with both INTERVAL and CRON.
+
+    !!! edgey "EdgeX 4.1"
+        The `activeYearlyTimeWindow` field is available since EdgeX 4.1.
 
 Examples of schedule definition include:
 
@@ -95,6 +99,19 @@ Examples of schedule definition include:
     {
         "type": "CRON",
         "crontab": "CRON_TZ=Asia/Taipei 0 0 0 * * *"
+    }
+    ```
+3. **activeYearlyTimeWindow**: A schedule job will be triggered every hour, but only during winter (November 1 to February 28) each year.
+    ```
+    {
+        "type": "INTERVAL",
+        "interval": "1h",
+        "activeYearlyTimeWindow": {
+            "startMonth": 11,
+            "startDay": 1,
+            "endMonth": 2,
+            "endDay": 28
+        }
     }
     ```
 !!! note
